@@ -1,0 +1,25 @@
+@startuml
+actor Aluno
+actor Professor
+actor EmpresaParceira
+
+rectangle Sistema {
+    Aluno -- (Cadastro no Sistema)
+    Aluno -- (Consultar Saldo e Extrato)
+    Aluno -- (Resgatar Vantagens)
+    Aluno -- (Receber Notificação por Email)
+
+    Professor -- (Consultar Saldo e Extrato)
+    Professor -- (Distribuir Moedas)
+    
+    EmpresaParceira -- (Cadastrar Vantagens)
+    EmpresaParceira -- (Receber Notificação de Resgate)
+
+
+    (Resgatar Vantagens) ..> (Descontar Valor do Saldo) : <<include>>
+    (Resgatar Vantagens) ..> (Enviar Email de Confirmação ao Aluno) : <<include>>
+    (Distribuir Moedas) ..> (Enviar Notificação de Moedas ao Aluno) : <<include>>
+    (Resgatar Vantagens) ..> (Enviar Email ao Parceiro) : <<include>>
+}
+
+@enduml
