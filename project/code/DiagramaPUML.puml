@@ -1,0 +1,41 @@
+@startuml
+
+package "Sistema de Mérito" {
+
+  [AplicacaoWeb] --> [AutenticacaoController] : "Leitura/Escrita"
+  [AplicacaoWeb] --> [AlunoController] : "Leitura/Escrita"
+  [AplicacaoWeb] --> [EmpresaController] : "Leitura/Escrita"
+  [AplicacaoWeb] --> [ProfessorController] : "Leitura/Escrita"
+  [AplicacaoWeb] --> [VantagemController] : "Leitura/Escrita"
+  [BancoDeDados]
+
+  component "AutenticacaoController" {
+    [LoginHandler] --> [AutenticacaoRepository] : "Valida credenciais"
+    [AutenticacaoRepository] --> [BancoDeDados] : "Consulta dados"
+  }
+
+  component "AlunoController" {
+    [AlunoCadastro] --> [AlunoRepository] : "Cadastra aluno"
+    [AlunoRepository] --> [BancoDeDados] : "Armazena aluno"
+    [AlunoConsultaSaldo] --> [AlunoRepository] : "Consulta saldo"
+  }
+
+  component "ProfessorController" {
+    [ProfessorRepository] --> [BancoDeDados] : "Armazena professor"
+    [DistribuirMoedas] --> [ProfessorRepository] : "Envia moedas para aluno"
+  }
+
+  component "EmpresaController" {
+    [EmpresaCadastro] --> [EmpresaRepository] : "Cadastra empresa"
+    [EmpresaRepository] --> [BancoDeDados] : "Armazena empresa"
+    [OferecerVantagens] --> [EmpresaRepository] : "Cadastra vantagens"
+  }
+
+  component "VantagemController" {
+    [ResgatarVantagem] --> [VantagemRepository] : "Verifica e processa resgate"
+    [VantagemRepository] --> [BancoDeDados] : "Atualiza saldo aluno e registra resgate"
+  }
+  
+}
+
+@enduml
