@@ -1,6 +1,6 @@
 @startuml
 
-package "Sistema de Mérito" {
+package "Sistema de MÃ©rito" {
 
   [AplicacaoWeb] --> [AutenticacaoController] : "Leitura/Escrita"
   [AplicacaoWeb] --> [AlunoController] : "Leitura/Escrita"
