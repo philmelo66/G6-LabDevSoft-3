@@ -1,0 +1,59 @@
+@startuml
+class Usuario {
+  - login: String
+  - senha: String
+  + autenticar(): boolean
+}
+
+class Aluno extends Usuario{
+  - nome: String
+  - email: String
+  - cpf: String
+  - rg: String
+  - endereco: String
+  - curso: String
+  - saldoMoedas: int
+  + consultarSaldo(): void
+  + consultarExtrato(): void
+  + trocarMoedas(): void
+}
+
+class Professor extends Usuario{
+  - nome: String
+  - cpf: String
+  - departamento: String
+  - saldoMoedas: int = 1000
+  - instituicao: Instituicao
+  + distribuirMoedas(aluno: Aluno, valor: int, motivo: String): void
+  + consultarSaldo(): void
+  + consultarExtrato(): void
+}
+
+
+class Empresa extends Usuario{
+  - nome: String
+  - descricao: String
+  + cadastrarVantagem(): void
+  + listarVantagens(): void
+}
+
+class Instituicao {
+  - nome: String
+  - endereco: String
+  + listarProfessores(): void
+  + listarAlunos(): void
+}
+
+class Vantagem {
+  - nome: String
+  - descricao: String
+  - foto: String
+  - custoMoedas: int
+  + resgatar(aluno: Aluno): void
+}
+
+Instituicao "1" <-- "0..*" Aluno : "frequenta"
+Instituicao "1" <-- "1..*" Professor : "faz parte"
+Aluno "1" --> "0..*" Vantagem : "resgata"
+Empresa "1" --> "0..*" Vantagem : "oferece"
+@enduml
