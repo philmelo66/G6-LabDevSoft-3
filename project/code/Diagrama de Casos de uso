@@ -7,7 +7,6 @@ rectangle Sistema {
     Aluno -- (Cadastro no Sistema)
     Aluno -- (Consultar Saldo e Extrato)
     Aluno -- (Resgatar Vantagens)
-    Aluno -- (Receber Notificação por Email)
 
     Professor -- (Consultar Saldo e Extrato)
     Professor -- (Distribuir Moedas)
