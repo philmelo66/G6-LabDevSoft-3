@@ -1,7 +1,7 @@
 package main.java.services;
 
-import com.exemplo.models.Instituicao;
-import com.exemplo.repositories.InstituicaoRepository;
+import main.java.models.Instituicao;
+import main.java.repositories.InstituicaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

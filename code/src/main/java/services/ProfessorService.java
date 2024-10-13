@@ -1,7 +1,7 @@
 package main.java.services;
 
-import com.exemplo.models.Professor;
-import com.exemplo.repositories.ProfessorRepository;
+import main.java.models.Professor;
+import main.java.repositories.ProfessorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

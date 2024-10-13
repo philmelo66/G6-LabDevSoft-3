@@ -1,7 +1,7 @@
 package main.java.controllers;
 
-import com.exemplo.models.Aluno;
-import com.exemplo.services.AlunoService;
+import main.java.models.Aluno;
+import main.java.services.AlunoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

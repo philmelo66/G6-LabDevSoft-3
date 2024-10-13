@@ -1,7 +1,7 @@
 package main.java.controllers;
 
-import com.exemplo.models.Vantagem;
-import com.exemplo.services.VantagemService;
+import main.java.models.Vantagem;
+import main.java.services.VantagemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

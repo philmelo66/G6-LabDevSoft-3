@@ -1,7 +1,7 @@
 package main.java.controllers;
 
-import com.exemplo.models.Empresa;
-import com.exemplo.services.EmpresaService;
+import main.java.models.Empresa;
+import main.java.services.EmpresaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

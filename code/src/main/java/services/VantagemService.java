@@ -1,7 +1,7 @@
 package main.java.services;
 
-import com.exemplo.models.Vantagem;
-import com.exemplo.repositories.VantagemRepository;
+import main.java.models.Vantagem;
+import main.java.repositories.VantagemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,7 +1,7 @@
 package main.java.controllers;
 
-import com.exemplo.models.Professor;
-import com.exemplo.services.ProfessorService;
+import main.java.models.Professor;
+import main.java.services.ProfessorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,7 +1,7 @@
 package main.java.controllers;
 
-import com.exemplo.models.Instituicao;
-import com.exemplo.services.InstituicaoService;
+import main.java.models.Instituicao;
+import main.java.services.InstituicaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

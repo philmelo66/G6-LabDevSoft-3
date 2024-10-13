@@ -1,7 +1,7 @@
 package main.java.services;
 
-import com.exemplo.models.Aluno;
-import com.exemplo.repositories.AlunoRepository;
+import main.java.models.Aluno;
+import main.java.repositories.AlunoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

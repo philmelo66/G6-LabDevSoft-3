@@ -1,7 +1,7 @@
 package main.java.services;
 
-import com.exemplo.models.Empresa;
-import com.exemplo.repositories.EmpresaRepository;
+import main.java.models.Empresa;
+import main.java.repositories.EmpresaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
