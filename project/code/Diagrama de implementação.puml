@@ -1,0 +1,87 @@
+@startuml
+component "Autenticação" as AuthComponent {
+  interface IAutenticacao {
+    + autenticar(login: String, senha: String): boolean
+  }
+}
+
+component "Usuário" as UsuarioComponent {
+  class Usuario {
+    - login: String
+    - senha: String
+    + autenticar(): boolean
+  }
+}
+
+component "Aluno" as AlunoComponent {
+  class Aluno {
+    - nome: String
+    - email: String
+    - cpf: String
+    - rg: String
+    - endereco: String
+    - curso: String
+    - saldoMoedas: int
+    + consultarSaldo(): void
+    + consultarExtrato(): void
+    + trocarMoedas(): void
+  }
+}
+
+component "Professor" as ProfessorComponent {
+  class Professor {
+    - nome: String
+    - cpf: String
+    - departamento: String
+    - saldoMoedas: int = 1000
+    - instituicao: Instituicao
+    + distribuirMoedas(aluno: Aluno, valor: int, motivo: String): void
+    + consultarSaldo(): void
+    + consultarExtrato(): void
+  }
+}
+
+component "Empresa" as EmpresaComponent {
+  class Empresa {
+    - nome: String
+    - descricao: String
+    + cadastrarVantagem(): void
+    + listarVantagens(): void
+  }
+}
+
+component "Instituicao" as InstituicaoComponent {
+  class Instituicao {
+    - nome: String
+    - endereco: String
+    + listarProfessores(): void
+    + listarAlunos(): void
+  }
+}
+
+component "Vantagem" as VantagemComponent {
+  class Vantagem {
+    - nome: String
+    - descricao: String
+    - foto: String
+    - custoMoedas: int
+    + resgatar(aluno: Aluno): void
+  }
+}
+
+component "Database" as DB {
+  class "Sistema de Matrículas" as Database
+}
+
+UsuarioComponent -[HIDDEN]--> AuthComponent : Usa
+AlunoComponent --> UsuarioComponent : Herda
+ProfessorComponent --> UsuarioComponent : Herda
+EmpresaComponent --> UsuarioComponent : Herda
+AlunoComponent --> InstituicaoComponent : "frequenta"
+ProfessorComponent --> InstituicaoComponent : "faz parte"
+AlunoComponent --> VantagemComponent : "resgata"
+EmpresaComponent --> VantagemComponent : "oferece"
+AlunoComponent --> DB : "Grava dados"
+ProfessorComponent --> DB : "Consulta dados"
+InstituicaoComponent --> DB : "Gerencia dados"
+@enduml
