@@ -1,11 +1,26 @@
 @startuml
+abstract class Transacao {
+  - moedas: int
+  - data: Date
+  - origem: Usuario
+  - destino: Usuario
+  - descricao: String
+}
+
+class TransferenciaPontos extends Transacao {
+}
+
+class ResgateVantagem extends Transacao {
+  - vantagem: Vantagem
+}
+
 class Usuario {
   - login: String
   - senha: String
   + autenticar(): boolean
 }
 
-class Aluno extends Usuario{
+class Aluno extends Usuario {
   - nome: String
   - email: String
   - cpf: String
@@ -18,7 +33,7 @@ class Aluno extends Usuario{
   + trocarMoedas(): void
 }
 
-class Professor extends Usuario{
+class Professor extends Usuario {
   - nome: String
   - cpf: String
   - departamento: String
@@ -29,8 +44,7 @@ class Professor extends Usuario{
   + consultarExtrato(): void
 }
 
-
-class Empresa extends Usuario{
+class Empresa extends Usuario {
   - nome: String
   - descricao: String
   + cadastrarVantagem(): void
@@ -54,6 +68,12 @@ class Vantagem {
 
 Instituicao "1" <-- "0..*" Aluno : "frequenta"
 Instituicao "1" <-- "1..*" Professor : "faz parte"
-Aluno "1" --> "0..*" Vantagem : "resgata"
+
+Aluno "0..*" --> "0..*" TransferenciaPontos : "transfere pontos"
+Professor "0..*" --> "0..*" TransferenciaPontos : "recebe pontos"
+
+Aluno "0..*" --> "0..*" ResgateVantagem : "resgata"
+Vantagem "0..*" --> "0..*" ResgateVantagem : "é resgatada"
+
 Empresa "1" --> "0..*" Vantagem : "oferece"
 @enduml
