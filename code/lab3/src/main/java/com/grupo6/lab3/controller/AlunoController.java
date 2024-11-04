@@ -45,4 +45,10 @@ public class AlunoController {
                 ? ResponseEntity.ok().build()
                 : ResponseEntity.notFound().build();
     }
+
+    @GetMapping("/{id}/extrato")
+    public ResponseEntity<List<Object>> getExtrato(@PathVariable Long id) {
+        List<Object> extrato = alunoService.getExtrato(id);
+        return ResponseEntity.ok(extrato);
+    }
 }

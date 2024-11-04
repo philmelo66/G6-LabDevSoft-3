@@ -2,19 +2,30 @@ package com.grupo6.lab3.service;
 
 import com.grupo6.lab3.dto.AlunoDTO;
 import com.grupo6.lab3.entity.Aluno;
+import com.grupo6.lab3.entity.ResgateVantagem;
+import com.grupo6.lab3.entity.TransferenciaPontos;
 import com.grupo6.lab3.repository.AlunoRepository;
+import com.grupo6.lab3.repository.ResgateVantagemRepository;
+import com.grupo6.lab3.repository.TransferenciaPontosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class AlunoService {
 
     @Autowired
     private AlunoRepository alunoRepository;
+
+    @Autowired
+    private TransferenciaPontosRepository transferenciaPontosRepository;
+
+    @Autowired
+    private ResgateVantagemRepository resgateVantagemRepository;
 
     public List<AlunoDTO> getAllAlunos() {
         return alunoRepository.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
@@ -52,6 +63,14 @@ public class AlunoService {
                     return true;
                 })
                 .orElse(false);
+    }
+
+    public List<Object> getExtrato(Long alunoId) {
+        List<TransferenciaPontos> transferencias = transferenciaPontosRepository.findByOrigemIdOrDestinoId(alunoId, alunoId);
+        List<ResgateVantagem> resgates = resgateVantagemRepository.findByOrigemIdOrDestinoId(alunoId, alunoId);
+
+        return Stream.concat(transferencias.stream(), resgates.stream())
+                     .collect(Collectors.toList());
     }
 
     private AlunoDTO convertToDTO(Aluno aluno) {
