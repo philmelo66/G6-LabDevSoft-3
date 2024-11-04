@@ -1,5 +1,5 @@
-# Nome do projeto
-Escreva um ou dois parágrafo resumindo o objetivo do seu projeto.
+# Sistema Mérito Aluno
+O sistema de mérito visa incentivar alunos, permitindo que professores distribuam moedas como reconhecimento por bom desempenho. Os alunos podem trocar essas moedas por benefícios oferecidos por empresas parceiras, como descontos e produtos. O sistema permite o cadastro e autenticação de alunos, professores e empresas, além de gerenciar transações e notificações automáticas para todos os envolvidos.
 
 ## Integrantes
 * Augusto Fuscaldi Cerezo
@@ -11,4 +11,3 @@ Escreva um ou dois parágrafo resumindo o objetivo do seu projeto.
 * Cristiano de Macêdo Neto
 
 ## Instruções de utilização
-Assim que a primeira versão do sistema estiver disponível, deverá complementar com as instruções de utilização. Descreva como instalar eventuais dependências e como executar a aplicação.
