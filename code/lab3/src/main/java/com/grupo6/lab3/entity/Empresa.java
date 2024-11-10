@@ -9,6 +9,8 @@ import lombok.Setter;
 
 import java.util.List;
 
+import com.grupo6.lab3.security.Roles;
+
 @Entity
 @Getter
 @Setter
@@ -22,4 +24,8 @@ public class Empresa extends Usuario {
     @Id
     @GeneratedValue
     private Long id;
+
+    public Empresa() {
+        this.setRole(Roles.ROLE_EMPRESA);
+    }
 }

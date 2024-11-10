@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.Setter;
 import java.util.List;
 
+import com.grupo6.lab3.security.Roles;
+
 @Entity
 @Getter
 @Setter
@@ -31,4 +33,9 @@ public class Aluno extends Usuario {
 
     @OneToMany(mappedBy = "aluno")
     private List<Vantagem> vantagens;
+
+
+    public Aluno() {
+        this.setRole(Roles.ROLE_ALUNO);
+    }
 }

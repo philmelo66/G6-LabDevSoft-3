@@ -16,4 +16,8 @@ public class UsuarioService {
     public Optional<Usuario> findById(Long id) {
         return usuarioRepository.findById(id);
     }
+
+    public Optional<Usuario> findByLogin(String login) {
+        return usuarioRepository.findByLogin(login);
+    }
 } 
