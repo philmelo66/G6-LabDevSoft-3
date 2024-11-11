@@ -1,0 +1,28 @@
+@startuml
+
+participant Client as Client
+participant Controller as Controller
+participant Service as Service
+participant Repository as Repository
+
+Client -> Controller: GET /vantagens
+Controller -> Service: getAllVantagens()
+Service -> Repository: findAllVantagens()
+Repository --> Service: List<Vantagem>
+Service --> Controller: List<VantagemDTO>
+Controller --> Client: List<VantagemDTO>
+
+Client -> Controller: GET /vantagens/{id}
+Controller -> Service: getVantagemById(id)
+Service -> Repository: findVantagemById(id)
+Repository --> Service: Optional<Vantagem>
+Service --> Controller: Optional<VantagemDTO>
+Controller --> Client: VantagemDTO
+
+Client -> Controller: POST /vantagens
+Controller -> Service: createVantagem(VantagemDTO)
+Service -> Repository: save(Vantagem)
+Repository --> Service: Vantagem
+Service --> Controller: VantagemDTO
+Controller --> Client: VantagemDTO
+@enduml
