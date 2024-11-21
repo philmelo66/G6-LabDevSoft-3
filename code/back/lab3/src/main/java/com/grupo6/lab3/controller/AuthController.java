@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
-public class AuthController {
+public class    AuthController {
 
     @PostMapping("/login")
     public void login(@ApiParam(value = "Login request body", required = true) @RequestBody LoginDTO loginRequest) {}

@@ -14,4 +14,5 @@ public class AlunoDTO {
     private String curso;
     private int saldoMoedas;
     private Long instituicaoId;
+    private String senha;
 }

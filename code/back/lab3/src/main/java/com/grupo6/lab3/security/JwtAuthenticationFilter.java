@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.grupo6.lab3.entity.Usuario;
 import com.grupo6.lab3.service.UsuarioService;
+import com.grupo6.lab3.dto.LoginResponseDTO;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
+import java.util.HashMap;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -56,10 +58,24 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        String username = authResult.getName();
-        String role = authResult.getAuthorities().stream().findFirst().map(grantedAuthority -> grantedAuthority.getAuthority()).orElse("");
-        String token = jwtUtil.generateToken(username, role);
-        response.addHeader("Authorization", "Bearer " + token);
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
+        CustomUserDetails userDetails = (CustomUserDetails) authResult.getPrincipal();
+        String role = userDetails.getAuthorities().iterator().next().getAuthority();
+        String token = jwtUtil.generateToken(userDetails.getUsername(), role);
+        
+        // Set response headers
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        
+        // Create response object
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("token", token);
+        responseBody.put("userId", userDetails.getUsuario().getId());
+        responseBody.put("role", role);
+
+        // Write response
+        String jsonResponse = new ObjectMapper().writeValueAsString(responseBody);
+        response.getWriter().write(jsonResponse);
+        response.getWriter().flush();
     }
 } 

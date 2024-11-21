@@ -8,6 +8,7 @@ import com.grupo6.lab3.repository.AlunoRepository;
 import com.grupo6.lab3.repository.ResgateVantagemRepository;
 import com.grupo6.lab3.repository.TransferenciaPontosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,6 +38,7 @@ public class AlunoService {
 
     public AlunoDTO createAluno(AlunoDTO alunoDTO) {
         Aluno aluno = convertToEntity(alunoDTO);
+        aluno.setSenha(new BCryptPasswordEncoder().encode(aluno.getSenha()));
         Aluno savedAluno = alunoRepository.save(aluno);
         return convertToDTO(savedAluno);
     }
@@ -83,7 +85,9 @@ public class AlunoService {
         alunoDTO.setEndereco(aluno.getEndereco());
         alunoDTO.setCurso(aluno.getCurso());
         alunoDTO.setSaldoMoedas(aluno.getSaldoMoedas());
-        alunoDTO.setInstituicaoId(aluno.getInstituicao().getId());
+        if(aluno.getInstituicao() != null){
+            alunoDTO.setInstituicaoId(aluno.getInstituicao().getId());
+        }
         return alunoDTO;
     }
 
@@ -96,6 +100,7 @@ public class AlunoService {
         aluno.setEndereco(alunoDTO.getEndereco());
         aluno.setCurso(alunoDTO.getCurso());
         aluno.setSaldoMoedas(alunoDTO.getSaldoMoedas());
+        aluno.setSenha(alunoDTO.getSenha());
         return aluno;
     }
 }
