@@ -39,7 +39,7 @@ export function UserActions() {
       ))}
       <NavbarItem className="hidden lg:flex">
         <span>
-          {usuario.nome} ({usuario.saldoMoedas ?? 0} moedas)
+          {usuario.nome}
         </span>
       </NavbarItem>
       <NavbarItem>

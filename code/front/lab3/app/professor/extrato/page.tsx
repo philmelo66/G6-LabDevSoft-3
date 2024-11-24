@@ -12,30 +12,41 @@ import {
 } from "@nextui-org/table";
 import { Chip } from "@nextui-org/chip";
 
-import { TransferenciaPontosDTO } from "@/types";
 import { formatDate } from "@/utils/format";
+import { getToken } from "@/app/providers/auth-provider";
+import { useAuth } from "@/app/providers/auth-provider";
+interface Transacao {
+  id: number;
+  tipo: string;
+  moedas: number;
+  data: string;
+  descricao: string;
+  origem: string;
+  destino: string;
+}
 
 export default function ExtratoProfessorPage() {
-  const [transactions, setTransactions] = useState<TransferenciaPontosDTO[]>(
-    [],
-  );
+  const { usuario } = useAuth();
+  const [transactions, setTransactions] = useState<Transacao[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [saldoTotal, setSaldoTotal] = useState(0);
-  const [saldoSemestre, setSaldoSemestre] = useState(0);
 
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const response = await fetch("/api/professor/extrato");
+        const response = await fetch(
+          `http://localhost:8080/api/transacoes/extrato/${usuario?.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${getToken()}`,
+          },
+        });
         const data = await response.json();
 
         if (!response.ok) {
           throw new Error(data.message);
         }
 
-        setTransactions(data.transacoes);
-        setSaldoTotal(data.saldoTotal);
-        setSaldoSemestre(data.saldoSemestre);
+        setTransactions(data);
       } catch (error) {
         console.error(error);
       } finally {
@@ -50,18 +61,9 @@ export default function ExtratoProfessorPage() {
     <div className="py-8">
       <Card>
         <CardHeader className="flex flex-col gap-4">
-          <h1 className="text-2xl font-bold">Extrato de Moedas</h1>
-          <div className="flex gap-4">
-            <Chip color="success" size="lg" variant="shadow">
-              Saldo Total: {saldoTotal} moedas
-            </Chip>
-            <Chip color="primary" size="lg" variant="shadow">
-              Saldo do Semestre: {saldoSemestre} moedas
-            </Chip>
-          </div>
+          <h1 className="text-2xl font-bold">Extrato de Moedas Distribuídas</h1>
           <p className="text-small text-default-500">
-            A cada semestre, você recebe 1.000 moedas para distribuir. O saldo
-            não utilizado é acumulado.
+            Histórico de moedas distribuídas aos alunos
           </p>
         </CardHeader>
         <CardBody>
@@ -69,13 +71,12 @@ export default function ExtratoProfessorPage() {
             isHeaderSticky
             isStriped
             aria-label="Tabela de transações"
-            classNames={{
-              wrapper: "max-h-[600px]",
-            }}
           >
             <TableHeader>
               <TableColumn>Data</TableColumn>
-              <TableColumn>Aluno</TableColumn>
+              <TableColumn>Tipo</TableColumn>
+              <TableColumn>Origem</TableColumn>
+              <TableColumn>Destino</TableColumn>
               <TableColumn>Descrição</TableColumn>
               <TableColumn>Moedas</TableColumn>
             </TableHeader>
@@ -84,14 +85,25 @@ export default function ExtratoProfessorPage() {
               isLoading={isLoading}
               loadingContent={<div>Carregando...</div>}
             >
-              {transactions.map((transaction) => (
-                <TableRow key={`${transaction.data}-${transaction.destinoId}`}>
-                  <TableCell>{formatDate(transaction.data)}</TableCell>
-                  <TableCell>ID: {transaction.destinoId}</TableCell>
+              {transactions?.map((transaction) => (
+                <TableRow key={transaction.id}>
+                  <TableCell>
+                    {formatDate(new Date(transaction.data))}
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      color={transaction.tipo === "TRANSFERENCIA" ? "success" : "primary"}
+                      variant="flat"
+                    >
+                      {transaction.tipo}
+                    </Chip>
+                  </TableCell>
+                  <TableCell>{transaction.origem}</TableCell>
+                  <TableCell>{transaction.destino}</TableCell>
                   <TableCell>{transaction.descricao}</TableCell>
                   <TableCell>
-                    <Chip color="danger" variant="flat">
-                      -{transaction.moedas}
+                    <Chip color="success" variant="flat">
+                      {transaction.moedas}
                     </Chip>
                   </TableCell>
                 </TableRow>

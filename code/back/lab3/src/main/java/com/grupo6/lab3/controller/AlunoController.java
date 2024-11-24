@@ -53,4 +53,10 @@ public class AlunoController {
         List<Object> extrato = alunoService.getExtrato(id);
         return ResponseEntity.ok(extrato);
     }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<AlunoDTO>> searchAlunos(@RequestParam String nome) {
+        List<AlunoDTO> alunos = alunoService.searchAlunosByName(nome);
+        return ResponseEntity.ok(alunos);
+    }
 }

@@ -4,13 +4,13 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
-export type TipoUsuario = "ALUNO" | "PROFESSOR" | "EMPRESA";
+export type TipoUsuario = "ROLE_ALUNO" | "ROLE_PROFESSOR" | "ROLE_EMPRESA";
 
 export interface Usuario {
   id: number;
   email: string;
   nome: string;
-  tipo: TipoUsuario;
+  role: TipoUsuario;
 }
 
 export interface RespostaAutenticacao {
@@ -99,5 +99,16 @@ export interface ProfessorDTO {
   cpf: string;
   departamento: string;
   instituicaoId: number;
+}
+
+export interface Aluno {
+  id: number;
+  nome: string;
+  email: string;
+  cpf: string;
+  rg: string;
+  endereco: string;
+  curso: string;
   saldoMoedas: number;
+  instituicaoId: number;
 }

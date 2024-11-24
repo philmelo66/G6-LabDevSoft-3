@@ -75,6 +75,13 @@ public class AlunoService {
                      .collect(Collectors.toList());
     }
 
+    public List<AlunoDTO> searchAlunosByName(String nome) {
+        return alunoRepository.findByNomeContainingIgnoreCase(nome)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
     private AlunoDTO convertToDTO(Aluno aluno) {
         AlunoDTO alunoDTO = new AlunoDTO();
         alunoDTO.setId(aluno.getId());

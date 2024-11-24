@@ -2,11 +2,25 @@ import type { NextRequest } from "next/server";
 
 import { NextResponse } from "next/server";
 
+import { routes } from "./types/routes";
+
 export function middleware(request: NextRequest) {
   // const token = request.cookies.get("@Merit:token");
-  // const publicPaths = ["/login", "/cadastro-aluno", "/cadastro-empresa"];
-  
-  // if (publicPaths.includes(request.nextUrl.pathname)) {
+  // const userRole = request.cookies.get("@Merit:role");
+  // const path = request.nextUrl.pathname;
+  // console.log(token, userRole, path);
+
+  // const route = routes.find((r) => r.path === path || path.startsWith(r.path));
+
+  // if (!route) {
+  //   return NextResponse.next();
+  // }
+
+  // if (route.public) {
+  //   if (token) {
+  //     return NextResponse.redirect(new URL("/", request.url));
+  //   }
+
   //   return NextResponse.next();
   // }
 
@@ -14,31 +28,13 @@ export function middleware(request: NextRequest) {
   //   return NextResponse.redirect(new URL("/login", request.url));
   // }
 
-  // const path = request.nextUrl.pathname;
-  // const userRole = request.cookies.get("@Merit:role")?.value;
-
-  // if (path.startsWith("/aluno") && userRole !== "ALUNO") {
+  // if (route.roles.length > 0 && !route.roles.includes(userRole as any)) {
   //   return NextResponse.redirect(new URL("/", request.url));
   // }
 
-  // if (path.startsWith("/professor") && userRole !== "PROFESSOR") {
-  //   return NextResponse.redirect(new URL("/", request.url));
-  // }
-
-  // if (path.startsWith("/empresa") && userRole !== "EMPRESA") {
-  //   return NextResponse.redirect(new URL("/", request.url));
-  // }
-
-  // return NextResponse.next();
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: [
-    "/aluno/:path*",
-    "/professor/:path*",
-    "/empresa/:path*",
-    "/login",
-    "/cadastro-aluno",
-    "/cadastro-empresa",
-  ],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };

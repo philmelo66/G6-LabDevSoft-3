@@ -1,7 +1,11 @@
 package com.grupo6.lab3.service;
 
+import com.grupo6.lab3.dto.ExtratoDTO;
 import com.grupo6.lab3.dto.ResgateVantagemDTO;
 import com.grupo6.lab3.dto.TransferenciaPontosDTO;
+import com.grupo6.lab3.entity.Aluno;
+import com.grupo6.lab3.entity.Empresa;
+import com.grupo6.lab3.entity.Professor;
 import com.grupo6.lab3.entity.ResgateVantagem;
 import com.grupo6.lab3.entity.TransferenciaPontos;
 import com.grupo6.lab3.entity.Usuario;
@@ -11,6 +15,7 @@ import com.grupo6.lab3.repository.TransferenciaPontosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,5 +74,58 @@ public class TransacaoService {
             return Optional.of(resgateVantagemRepository.save(resgate));
         }
         return Optional.empty();
+    }
+
+    private String getUserName(Usuario usuario) {
+        if (usuario instanceof Professor) {
+            return ((Professor) usuario).getNome();
+        } else if (usuario instanceof Aluno) {
+            return ((Aluno) usuario).getNome();
+        } else if (usuario instanceof Empresa) {
+            return ((Empresa) usuario).getNome();
+        }
+        return usuario.getLogin(); // fallback to login if name is not available
+    }
+
+    public List<ExtratoDTO> getExtratoByUsuarioId(Long usuarioId) {
+        List<TransferenciaPontos> transferencias = 
+            transferenciaPontosRepository.findByOrigemIdOrDestinoId(usuarioId, usuarioId);
+        List<ResgateVantagem> resgates = 
+            resgateVantagemRepository.findByOrigemIdOrDestinoId(usuarioId, usuarioId);
+        
+        List<ExtratoDTO> extrato = new ArrayList<>();
+        
+        // Converter transferências
+        for (TransferenciaPontos t : transferencias) {
+            ExtratoDTO dto = new ExtratoDTO();
+            dto.setId(t.getId());
+            dto.setTipo("TRANSFERENCIA");
+            dto.setMoedas(t.getMoedas());
+            dto.setData(t.getData());
+            dto.setDescricao(t.getDescricao());
+            
+            dto.setOrigem(getUserName(t.getOrigem()));
+            dto.setDestino(getUserName(t.getDestino()));
+            extrato.add(dto);
+        }
+        
+        // Converter resgates
+        for (ResgateVantagem r : resgates) {
+            ExtratoDTO dto = new ExtratoDTO();
+            dto.setId(r.getId());
+            dto.setTipo("RESGATE");
+            dto.setMoedas(r.getMoedas());
+            dto.setData(r.getData());
+            dto.setDescricao(r.getDescricao());
+            dto.setOrigem(getUserName(r.getOrigem()));
+            dto.setDestino(getUserName(r.getDestino()));
+            dto.setVantagemNome(r.getVantagem().getNome());
+            extrato.add(dto);
+        }
+        
+        // Ordenar por data, mais recente primeiro
+        extrato.sort((a, b) -> b.getData().compareTo(a.getData()));
+        
+        return extrato;
     }
 } 

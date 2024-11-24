@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useCallback } from "react";
+import Cookies from "js-cookie";
 
 import { Usuario, RespostaAutenticacao } from "@/types";
 
@@ -35,7 +36,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         `http://localhost:8080/api/usuarios/${userId}`,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("@Merit:token")}`,
+            Authorization: `Bearer ${Cookies.get("@Merit:token")}`,
           },
         },
       );
@@ -48,9 +49,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       setUsuario(userData);
       localStorage.setItem("@Merit:user", JSON.stringify(userData));
+      Cookies.set("@Merit:role", userData.tipo);
     } catch (error) {
       console.error("Erro ao buscar usuário:", error);
-      // Se houver erro na busca do usuário, fazer logout
       logout();
       throw error;
     } finally {
@@ -60,10 +61,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(
     async (response: RespostaAutenticacao) => {
+      const COOKIE_OPTIONS = {
+        sameSite: "strict" as const,
+        path: "/",
+        expires: 7,
+      };
+      console.log(response.role);
+
       localStorage.setItem("@Merit:token", response.token);
+      Cookies.set("@Merit:token", response.token, COOKIE_OPTIONS);
+      Cookies.set("@Merit:role", response.role, COOKIE_OPTIONS);
       localStorage.setItem("@Merit:user", JSON.stringify(response.userId));
 
-      // Após login inicial, buscar dados completos do usuário
       await fetchUsuario(response.userId);
     },
     [fetchUsuario],
@@ -78,6 +87,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(() => {
     localStorage.removeItem("@Merit:token");
     localStorage.removeItem("@Merit:user");
+    Cookies.remove("@Merit:token");
+    Cookies.remove("@Merit:role");
     setUsuario(null);
   }, []);
 
@@ -104,4 +115,8 @@ export const useAuth = () => {
   }
 
   return context;
+};
+
+export const getToken = () => {
+  return Cookies.get("@Merit:token");
 };

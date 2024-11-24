@@ -34,7 +34,6 @@ export default function LoginPage() {
       if (!response.ok) {
         throw new Error("Erro ao fazer login");
       } else {
-        console.log(response.headers.get("Authorization"));
         login(data);
         router.push("/");
       }

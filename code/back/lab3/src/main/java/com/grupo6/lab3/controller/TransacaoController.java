@@ -1,5 +1,6 @@
 package com.grupo6.lab3.controller;
 
+import com.grupo6.lab3.dto.ExtratoDTO;
 import com.grupo6.lab3.dto.ResgateVantagemDTO;
 import com.grupo6.lab3.dto.TransferenciaPontosDTO;
 import com.grupo6.lab3.entity.ResgateVantagem;
@@ -42,5 +43,11 @@ public class TransacaoController {
         return transacaoService.createResgate(resgateDTO)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.badRequest().build());
+    }
+
+    @GetMapping("/extrato/{usuarioId}")
+    public ResponseEntity<List<ExtratoDTO>> getExtrato(@PathVariable Long usuarioId) {
+        List<ExtratoDTO> extrato = transacaoService.getExtratoByUsuarioId(usuarioId);
+        return ResponseEntity.ok(extrato);
     }
 } 

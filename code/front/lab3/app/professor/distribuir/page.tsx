@@ -9,18 +9,16 @@ import { Select, SelectItem } from "@nextui-org/select";
 import { useAsyncList } from "@react-stately/data";
 
 import { TransferenciaPontosDTO } from "@/types";
-
-interface Aluno {
-  id: number;
-  nome: string;
-  curso: string;
-}
+import { useAuth } from "@/app/providers/auth-provider";
+import { getToken } from "@/app/providers/auth-provider";
+import { Aluno } from "@/types";
 
 export default function DistribuirMoedasPage() {
+  const { usuario } = useAuth();
   const [formData, setFormData] = useState<TransferenciaPontosDTO>({
     moedas: 0,
     data: new Date(),
-    origemId: 0, // será preenchido pelo backend
+    origemId: usuario?.id || 0,
     destinoId: 0,
     descricao: "",
   });
@@ -29,11 +27,15 @@ export default function DistribuirMoedasPage() {
 
   const list = useAsyncList<Aluno>({
     async load({ filterText }) {
-      const response = await fetch(`/api/alunos/buscar?q=${filterText || ""}`);
+      const response = await fetch(`http://localhost:8080/api/alunos`, {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      });
       const json = await response.json();
 
       return {
-        items: json.alunos,
+        items: json,
       };
     },
   });
@@ -43,11 +45,17 @@ export default function DistribuirMoedasPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/professor/distribuir", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        "http://localhost:8080/api/transacoes/transferencias",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${getToken()}`,
+          },
+          body: JSON.stringify(formData),
+        },
+      );
 
       const data = await response.json();
 
@@ -63,10 +71,8 @@ export default function DistribuirMoedasPage() {
         destinoId: 0,
         descricao: "",
       });
-      // Adicionar feedback de sucesso
     } catch (error) {
       console.error(error);
-      // Adicionar tratamento de erro
     } finally {
       setIsLoading(false);
     }
@@ -78,9 +84,6 @@ export default function DistribuirMoedasPage() {
         <CardHeader className="flex flex-col gap-2">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold">Distribuir Moedas</h1>
-            <div className="text-success font-bold">
-              Saldo disponível: {saldoAtual} moedas
-            </div>
           </div>
         </CardHeader>
         <CardBody>
@@ -94,11 +97,10 @@ export default function DistribuirMoedasPage() {
               onChange={(e) =>
                 setFormData({ ...formData, destinoId: Number(e.target.value) })
               }
-              onInputChange={list.setFilterText}
             >
               {(aluno) => (
                 <SelectItem key={aluno.id} value={aluno.id}>
-                  {aluno.nome} - {aluno.curso}
+                  {aluno.nome} - {aluno.cpf} - {aluno.id}
                 </SelectItem>
               )}
             </Select>
@@ -106,8 +108,6 @@ export default function DistribuirMoedasPage() {
             <Input
               required
               label="Quantidade de Moedas"
-              max={saldoAtual}
-              min={1}
               type="number"
               value={formData.moedas.toString()}
               onChange={(e) =>
@@ -125,12 +125,7 @@ export default function DistribuirMoedasPage() {
               }
             />
 
-            <Button
-              color="primary"
-              isDisabled={formData.moedas > saldoAtual}
-              isLoading={isLoading}
-              type="submit"
-            >
+            <Button color="primary" isLoading={isLoading} type="submit">
               Distribuir Moedas
             </Button>
           </form>

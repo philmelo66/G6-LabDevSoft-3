@@ -1,45 +1,46 @@
+"use client";
+
 import { Link } from "@nextui-org/link";
 import {
   NavbarContent,
-  NavbarItem,
   Navbar as NextUINavbar,
 } from "@nextui-org/navbar";
+import { useEffect, useState } from "react";
 
 import { UserActions } from "./user-actions";
 import { MobileMenu } from "./mobile-menu";
-
-import { routes } from "@/types/routes";
+import { NavbarLinks } from "./navbar-links";
 
 export function Navbar() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <NextUINavbar>
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
-        <Link className="font-bold text-inherit" href="/">
-          Sistema de Mérito
-        </Link>
+        {mounted && (
+          <Link className="font-bold text-inherit" href="/">
+            Sistema de Mérito
+          </Link>
+        )}
       </NavbarContent>
 
-      <NavbarContent className="hidden sm:flex gap-4" justify="center">
-        {routes
-          .filter((route) => route.roles.length === 0)
-          .map((route) => (
-            <NavbarItem key={route.path}>
-              <Link
-                className="hover:text-primary"
-                color="foreground"
-                href={route.path}
-              >
-                {route.label}
-              </Link>
-            </NavbarItem>
-          ))}
-      </NavbarContent>
+      {mounted && (
+        <>
+          <NavbarContent className="hidden sm:flex gap-4" justify="center">
+            <NavbarLinks />
+          </NavbarContent>
 
-      <NavbarContent justify="end">
-        <UserActions />
-      </NavbarContent>
+          <NavbarContent justify="end">
+            <UserActions />
+          </NavbarContent>
 
-      <MobileMenu />
+          <MobileMenu />
+        </>
+      )}
     </NextUINavbar>
   );
 }
