@@ -1,11 +1,11 @@
 package com.grupo6.lab3.service;
 
+import com.grupo6.lab3.dto.AlunoDTO;
+import com.grupo6.lab3.dto.EmpresaDTO;
 import com.grupo6.lab3.dto.ExtratoDTO;
+import com.grupo6.lab3.dto.ProfessorDTO;
 import com.grupo6.lab3.dto.ResgateVantagemDTO;
 import com.grupo6.lab3.dto.TransferenciaPontosDTO;
-import com.grupo6.lab3.entity.Aluno;
-import com.grupo6.lab3.entity.Empresa;
-import com.grupo6.lab3.entity.Professor;
 import com.grupo6.lab3.entity.ResgateVantagem;
 import com.grupo6.lab3.entity.TransferenciaPontos;
 import com.grupo6.lab3.entity.Usuario;
@@ -33,6 +33,15 @@ public class TransacaoService {
 
     @Autowired
     private VantagemService vantagemService;
+
+    @Autowired
+    private ProfessorService professorService;
+
+    @Autowired
+    private AlunoService alunoService;
+
+    @Autowired
+    private EmpresaService empresaService;
 
     public List<TransferenciaPontos> getAllTransferencias() {
         return transferenciaPontosRepository.findAll();
@@ -77,14 +86,22 @@ public class TransacaoService {
     }
 
     private String getUserName(Usuario usuario) {
-        if (usuario instanceof Professor) {
-            return ((Professor) usuario).getNome();
-        } else if (usuario instanceof Aluno) {
-            return ((Aluno) usuario).getNome();
-        } else if (usuario instanceof Empresa) {
-            return ((Empresa) usuario).getNome();
+        Optional<ProfessorDTO> professor = professorService.getProfessorById(usuario.getId());
+        if (professor.isPresent()) {
+            return professor.get().getNome();
         }
-        return usuario.getLogin(); // fallback to login if name is not available
+
+        Optional<AlunoDTO> aluno = alunoService.getAlunoById(usuario.getId());
+        if (aluno.isPresent()) {
+            return aluno.get().getNome();
+        }
+
+        Optional<EmpresaDTO> empresa = empresaService.getEmpresaById(usuario.getId());
+        if (empresa.isPresent()) {
+            return empresa.get().getNome();
+        }
+
+        return usuario.getLogin(); // fallback to login if specific type not found
     }
 
     public List<ExtratoDTO> getExtratoByUsuarioId(Long usuarioId) {
@@ -105,7 +122,9 @@ public class TransacaoService {
             dto.setDescricao(t.getDescricao());
             
             dto.setOrigem(getUserName(t.getOrigem()));
+            dto.setOrigemId(t.getOrigem().getId());
             dto.setDestino(getUserName(t.getDestino()));
+            dto.setDestinoId(t.getDestino().getId());
             extrato.add(dto);
         }
         

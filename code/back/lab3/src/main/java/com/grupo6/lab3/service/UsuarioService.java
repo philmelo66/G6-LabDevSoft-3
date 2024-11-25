@@ -1,8 +1,5 @@
 package com.grupo6.lab3.service;
 
-import com.grupo6.lab3.entity.Aluno;
-import com.grupo6.lab3.entity.Empresa;
-import com.grupo6.lab3.entity.Professor;
 import com.grupo6.lab3.entity.Usuario;
 import com.grupo6.lab3.repository.UsuarioRepository;
 import com.grupo6.lab3.repository.ProfessorRepository;
@@ -29,25 +26,43 @@ public class UsuarioService {
     private EmpresaRepository empresaRepository;
 
     public Optional<Usuario> findById(Long id) {
-        Optional<Professor> professor = professorRepository.findById(id);
-        if (professor.isPresent()) {
-            return Optional.of(professor.get());
+        // First get the base Usuario
+        Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
+        if (usuarioOpt.isEmpty()) {
+            return Optional.empty();
         }
 
-        Optional<Aluno> aluno = alunoRepository.findById(id);
-        if (aluno.isPresent()) {
-            return Optional.of(aluno.get());
+        Usuario usuario = usuarioOpt.get();
+        // Check the role and verify the specific type exists
+        switch (usuario.getRole()) {
+            case ROLE_PROFESSOR:
+                if (professorRepository.existsById(id)) {
+                    return usuarioOpt;
+                }
+                break;
+            
+            case ROLE_ALUNO:
+                if (alunoRepository.existsById(id)) {
+                    return usuarioOpt;
+                }
+                break;
+            
+            case ROLE_EMPRESA:
+                if (empresaRepository.existsById(id)) {
+                    return usuarioOpt;
+                }
+                break;
         }
 
-        Optional<Empresa> empresa = empresaRepository.findById(id);
-        if (empresa.isPresent()) {
-            return Optional.of(empresa.get());
-        }
-
-        return usuarioRepository.findById(id);
+        return Optional.empty();
     }
 
     public Optional<Usuario> findByLogin(String login) {
-        return usuarioRepository.findByLogin(login);
+        Optional<Usuario> usuarioOpt = usuarioRepository.findByLogin(login);
+        if (usuarioOpt.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return findById(usuarioOpt.get().getId());
     }
 } 

@@ -38,8 +38,9 @@ export default function ExtratoProfessorPage() {
           {
             headers: {
               Authorization: `Bearer ${getToken()}`,
+            },
           },
-        });
+        );
         const data = await response.json();
 
         if (!response.ok) {
@@ -67,11 +68,7 @@ export default function ExtratoProfessorPage() {
           </p>
         </CardHeader>
         <CardBody>
-          <Table
-            isHeaderSticky
-            isStriped
-            aria-label="Tabela de transações"
-          >
+          <Table isHeaderSticky isStriped aria-label="Tabela de transações">
             <TableHeader>
               <TableColumn>Data</TableColumn>
               <TableColumn>Tipo</TableColumn>
@@ -92,7 +89,11 @@ export default function ExtratoProfessorPage() {
                   </TableCell>
                   <TableCell>
                     <Chip
-                      color={transaction.tipo === "TRANSFERENCIA" ? "success" : "primary"}
+                      color={
+                        transaction.tipo === "TRANSFERENCIA"
+                          ? "success"
+                          : "primary"
+                      }
                       variant="flat"
                     >
                       {transaction.tipo}

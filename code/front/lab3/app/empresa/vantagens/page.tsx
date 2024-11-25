@@ -23,6 +23,7 @@ import {
 import { useDisclosure } from "@nextui-org/use-disclosure";
 
 import { VantagemDTO } from "@/types";
+import { getToken } from "@/app/providers/auth-provider";
 
 export default function GerenciarVantagensPage() {
   const [vantagens, setVantagens] = useState<VantagemDTO[]>([]);
@@ -42,7 +43,11 @@ export default function GerenciarVantagensPage() {
 
   const fetchVantagens = async () => {
     try {
-      const response = await fetch("/api/empresa/vantagens");
+      const response = await fetch("http://localhost:8080/api/vantagens", {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      });
       const data = await response.json();
 
       if (!response.ok) {
@@ -63,14 +68,17 @@ export default function GerenciarVantagensPage() {
 
     try {
       const url = editingId
-        ? `/api/empresa/vantagens/${editingId}`
-        : "/api/empresa/vantagens";
+        ? `http://localhost:8080/api/vantagens/${editingId}`
+        : "http://localhost:8080/api/vantagens";
 
       const method = editingId ? "PUT" : "POST";
 
       const response = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getToken()}`,
+        },
         body: JSON.stringify(formData),
       });
 
@@ -100,9 +108,15 @@ export default function GerenciarVantagensPage() {
     if (!confirm("Tem certeza que deseja excluir esta vantagem?")) return;
 
     try {
-      const response = await fetch(`/api/empresa/vantagens/${id}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `http://localhost:8080/api/vantagens/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${getToken()}`,
+          },
+        },
+      );
 
       if (!response.ok) {
         throw new Error("Erro ao excluir vantagem");

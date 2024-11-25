@@ -1,24 +1,28 @@
 package com.grupo6.lab3.entity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.MapsId;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.List;
 
-import com.grupo6.lab3.security.Roles;
-
 @Entity
 @Getter
 @Setter
-public class Aluno extends Usuario {
+public class Aluno {
     @Id
-    @GeneratedValue
     private Long id;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "usuario_id", referencedColumnName = "id")
+    private Usuario usuario;
+
     private String nome;
     private String email;
     private String cpf;
@@ -33,9 +37,4 @@ public class Aluno extends Usuario {
 
     @OneToMany(mappedBy = "aluno")
     private List<Vantagem> vantagens;
-
-
-    public Aluno() {
-        this.setRole(Roles.ROLE_ALUNO);
-    }
 }

@@ -8,6 +8,7 @@ import { Textarea } from "@nextui-org/input";
 import { Button } from "@nextui-org/button";
 
 import { CadastroEmpresaDTO } from "@/types";
+import { getToken } from "@/app/providers/auth-provider";
 
 export default function CadastroEmpresaPage() {
   const [formData, setFormData] = useState<CadastroEmpresaDTO>({
@@ -24,9 +25,11 @@ export default function CadastroEmpresaPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/cadastro/empresa", {
+      const response = await fetch("http://localhost:8080/api/empresas", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(formData),
       });
 
@@ -68,9 +71,9 @@ export default function CadastroEmpresaPage() {
               required
               label="Email"
               type="email"
-              value={formData.email}
+              value={formData.login}
               onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
+                setFormData({ ...formData, login: e.target.value })
               }
             />
             <Textarea

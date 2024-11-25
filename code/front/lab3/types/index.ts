@@ -54,8 +54,10 @@ export interface LoginDTO {
 export interface TransferenciaPontosDTO {
   moedas: number;
   data: Date;
+  origem: string;
   origemId: number;
   destinoId: number;
+  destino: string;
   descricao: string;
 }
 
@@ -81,7 +83,7 @@ export interface CadastroAlunoDTO {
 
 export interface CadastroEmpresaDTO {
   nome: string;
-  email: string;
+  login: string;
   senha: string;
   descricao: string;
 }

@@ -13,6 +13,8 @@ public class ExtratoDTO {
     private Date data;
     private String descricao;
     private String origem;
+    private Long origemId;
     private String destino;
+    private Long destinoId;
     private String vantagemNome; // apenas para resgates
 } 

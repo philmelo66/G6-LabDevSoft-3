@@ -2,8 +2,12 @@ package com.grupo6.lab3.service;
 
 import com.grupo6.lab3.dto.ProfessorDTO;
 import com.grupo6.lab3.entity.Professor;
+import com.grupo6.lab3.entity.Usuario;
 import com.grupo6.lab3.repository.ProfessorRepository;
 import com.grupo6.lab3.repository.InstituicaoRepository;
+import com.grupo6.lab3.repository.UsuarioRepository;
+import com.grupo6.lab3.security.Roles;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,6 +21,9 @@ public class ProfessorService {
 
     @Autowired
     private ProfessorRepository professorRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @Autowired
     private InstituicaoRepository instituicaoRepository;
@@ -36,8 +43,16 @@ public class ProfessorService {
     }
 
     public ProfessorDTO createProfessor(ProfessorDTO professorDTO) {
+        Usuario usuario = new Usuario();
+        usuario.setLogin(professorDTO.getLogin());
+        usuario.setSenha(passwordEncoder.encode(professorDTO.getSenha()));
+        usuario.setRole(Roles.ROLE_PROFESSOR);
+        usuario = usuarioRepository.save(usuario);
+
         Professor professor = convertToEntity(professorDTO);
-        professor.setSenha(passwordEncoder.encode(professorDTO.getSenha()));
+        professor.setUsuario(usuario);
+        professor.setId(usuario.getId());
+
         Professor savedProfessor = professorRepository.save(professor);
         return convertToDTO(savedProfessor);
     }
@@ -50,12 +65,12 @@ public class ProfessorService {
         Professor professor = convertToEntity(professorDTO);
         professor.setId(id);
         
-        // Manter a senha atual se não foi fornecida uma nova
+        // Get existing usuario to maintain senha if not provided
+        Professor existingProfessor = professorRepository.findById(id).get();
+        professor.setUsuario(existingProfessor.getUsuario());
+        
         if (professorDTO.getSenha() != null && !professorDTO.getSenha().isEmpty()) {
-            professor.setSenha(passwordEncoder.encode(professorDTO.getSenha()));
-        } else {
-            professorRepository.findById(id)
-                .ifPresent(existingProfessor -> professor.setSenha(existingProfessor.getSenha()));
+            professor.getUsuario().setSenha(passwordEncoder.encode(professorDTO.getSenha()));
         }
 
         Professor updatedProfessor = professorRepository.save(professor);
@@ -77,7 +92,7 @@ public class ProfessorService {
         dto.setCpf(professor.getCpf());
         dto.setDepartamento(professor.getDepartamento());
         dto.setSaldoMoedas(professor.getSaldoMoedas());
-        dto.setLogin(professor.getLogin());
+        dto.setLogin(professor.getUsuario().getLogin());
         if (professor.getInstituicao() != null) {
             dto.setInstituicaoId(professor.getInstituicao().getId());
         }
@@ -86,12 +101,10 @@ public class ProfessorService {
 
     private Professor convertToEntity(ProfessorDTO dto) {
         Professor professor = new Professor();
-        professor.setId(dto.getId());
         professor.setNome(dto.getNome());
         professor.setCpf(dto.getCpf());
         professor.setDepartamento(dto.getDepartamento());
         professor.setSaldoMoedas(dto.getSaldoMoedas());
-        professor.setLogin(dto.getLogin());
         
         if (dto.getInstituicaoId() != null) {
             instituicaoRepository.findById(dto.getInstituicaoId())

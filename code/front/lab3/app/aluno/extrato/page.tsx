@@ -14,8 +14,10 @@ import { Chip } from "@nextui-org/chip";
 
 import { TransferenciaPontosDTO } from "@/types";
 import { formatDate } from "@/utils/format";
+import { getToken, useAuth } from "@/app/providers/auth-provider";
 
 export default function ExtratoAlunoPage() {
+  const { usuario } = useAuth();
   const [transactions, setTransactions] = useState<TransferenciaPontosDTO[]>(
     [],
   );
@@ -25,15 +27,26 @@ export default function ExtratoAlunoPage() {
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const response = await fetch("/api/aluno/extrato");
+        const response = await fetch(
+          `http://localhost:8080/api/transacoes/extrato/${usuario?.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${getToken()}`,
+            },
+          },
+        );
         const data = await response.json();
 
         if (!response.ok) {
           throw new Error(data.message);
         }
 
-        setTransactions(data.transacoes);
-        setSaldoTotal(data.saldoTotal);
+        setTransactions(data);
+        setSaldoTotal(
+          data.reduce((acc: number, transaction: TransferenciaPontosDTO) => {
+            return acc + transaction.moedas;
+          }, 0),
+        );
       } catch (error) {
         console.error(error);
         // Adicionar tratamento de erro
@@ -49,7 +62,7 @@ export default function ExtratoAlunoPage() {
     <div className="py-8">
       <Card>
         <CardHeader className="flex flex-col gap-2">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between w-full p-5 items-center">
             <h1 className="text-2xl font-bold">Extrato de Moedas</h1>
             <Chip color="success" size="lg" variant="shadow">
               Saldo: {saldoTotal} moedas
@@ -83,12 +96,17 @@ export default function ExtratoAlunoPage() {
                   <TableCell>{formatDate(transaction.data)}</TableCell>
                   <TableCell>{transaction.descricao}</TableCell>
                   <TableCell>
-                    {transaction.origemId ? "Recebido de" : "Enviado para"} ID:{" "}
-                    {transaction.origemId || transaction.destinoId}
+                    {transaction.destinoId === usuario?.id
+                      ? "Recebido de " + transaction.origem
+                      : "Enviado para " + transaction.destino}
                   </TableCell>
                   <TableCell>
                     <Chip
-                      color={transaction.origemId ? "success" : "danger"}
+                      color={
+                        transaction.destinoId === usuario?.id
+                          ? "success"
+                          : "danger"
+                      }
                       variant="flat"
                     >
                       {transaction.origemId ? "+" : "-"}

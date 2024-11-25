@@ -1,16 +1,19 @@
 package com.grupo6.lab3.service;
 
 import com.grupo6.lab3.dto.AlunoDTO;
-import com.grupo6.lab3.entity.Aluno;
-import com.grupo6.lab3.entity.ResgateVantagem;
-import com.grupo6.lab3.entity.TransferenciaPontos;
+import com.grupo6.lab3.entity.*;
 import com.grupo6.lab3.repository.AlunoRepository;
 import com.grupo6.lab3.repository.ResgateVantagemRepository;
 import com.grupo6.lab3.repository.TransferenciaPontosRepository;
+import com.grupo6.lab3.repository.UsuarioRepository;
+import com.grupo6.lab3.security.Roles;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,6 +31,11 @@ public class AlunoService {
     @Autowired
     private ResgateVantagemRepository resgateVantagemRepository;
 
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     public List<AlunoDTO> getAllAlunos() {
         return alunoRepository.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
     }
@@ -37,10 +45,17 @@ public class AlunoService {
     }
 
     public AlunoDTO createAluno(AlunoDTO alunoDTO) {
+        Usuario usuario = new Usuario();
+        usuario.setLogin(alunoDTO.getEmail());
+        usuario.setSenha(passwordEncoder.encode(alunoDTO.getSenha()));
+        usuario.setRole(Roles.ROLE_ALUNO);
+        usuario = usuarioRepository.save(usuario);
+
         Aluno aluno = convertToEntity(alunoDTO);
-        aluno.setSenha(new BCryptPasswordEncoder().encode(aluno.getSenha()));
-        Aluno savedAluno = alunoRepository.save(aluno);
-        return convertToDTO(savedAluno);
+        aluno.setUsuario(usuario);
+        aluno = alunoRepository.save(aluno);
+        
+        return convertToDTO(aluno);
     }
 
     public Optional<AlunoDTO> updateAluno(Long id, AlunoDTO alunoDTO) {
@@ -83,31 +98,37 @@ public class AlunoService {
     }
 
     private AlunoDTO convertToDTO(Aluno aluno) {
-        AlunoDTO alunoDTO = new AlunoDTO();
-        alunoDTO.setId(aluno.getId());
-        alunoDTO.setNome(aluno.getNome());
-        alunoDTO.setEmail(aluno.getEmail());
-        alunoDTO.setCpf(aluno.getCpf());
-        alunoDTO.setRg(aluno.getRg());
-        alunoDTO.setEndereco(aluno.getEndereco());
-        alunoDTO.setCurso(aluno.getCurso());
-        alunoDTO.setSaldoMoedas(aluno.getSaldoMoedas());
-        if(aluno.getInstituicao() != null){
-            alunoDTO.setInstituicaoId(aluno.getInstituicao().getId());
+        AlunoDTO dto = new AlunoDTO();
+        dto.setId(aluno.getId());
+        dto.setNome(aluno.getNome());
+        dto.setEmail(aluno.getEmail());
+        dto.setCpf(aluno.getCpf());
+        dto.setRg(aluno.getRg());
+        dto.setEndereco(aluno.getEndereco());
+        dto.setCurso(aluno.getCurso());
+        dto.setSaldoMoedas(aluno.getSaldoMoedas());
+        if (aluno.getInstituicao() != null) {
+            dto.setInstituicaoId(aluno.getInstituicao().getId());
         }
-        return alunoDTO;
+        return dto;
     }
 
-    private Aluno convertToEntity(AlunoDTO alunoDTO) {
+    private Aluno convertToEntity(AlunoDTO dto) {
         Aluno aluno = new Aluno();
-        aluno.setNome(alunoDTO.getNome());
-        aluno.setEmail(alunoDTO.getEmail());
-        aluno.setCpf(alunoDTO.getCpf());
-        aluno.setRg(alunoDTO.getRg());
-        aluno.setEndereco(alunoDTO.getEndereco());
-        aluno.setCurso(alunoDTO.getCurso());
-        aluno.setSaldoMoedas(alunoDTO.getSaldoMoedas());
-        aluno.setSenha(alunoDTO.getSenha());
+        aluno.setNome(dto.getNome());
+        aluno.setEmail(dto.getEmail());
+        aluno.setCpf(dto.getCpf());
+        aluno.setRg(dto.getRg());
+        aluno.setEndereco(dto.getEndereco());
+        aluno.setCurso(dto.getCurso());
+        aluno.setSaldoMoedas(0);
+        
+        if (dto.getInstituicaoId() != null) {
+            Instituicao instituicao = new Instituicao();
+            instituicao.setId(dto.getInstituicaoId());
+            aluno.setInstituicao(instituicao);
+        }
+        
         return aluno;
     }
 }
