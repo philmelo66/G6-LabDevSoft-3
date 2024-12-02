@@ -14,6 +14,7 @@ import {
 import { useDisclosure } from "@nextui-org/use-disclosure";
 
 import { VantagemDTO } from "@/types";
+import { getToken } from "@/app/providers/auth-provider";
 
 export default function VantagensAlunoPage() {
   const [vantagens, setVantagens] = useState<VantagemDTO[]>([]);
@@ -27,15 +28,18 @@ export default function VantagensAlunoPage() {
   useEffect(() => {
     const fetchVantagens = async () => {
       try {
-        const response = await fetch("/api/vantagens");
+        const response = await fetch("http://localhost:8080/api/vantagens", {
+          headers: {
+            Authorization: `Bearer ${getToken()}`,
+          },
+        });
         const data = await response.json();
 
         if (!response.ok) {
           throw new Error(data.message);
         }
 
-        setVantagens(data.vantagens);
-        setSaldoMoedas(data.saldoMoedas);
+        setVantagens(data);
       } catch (error) {
         console.error(error);
       } finally {
@@ -50,11 +54,17 @@ export default function VantagensAlunoPage() {
     if (!selectedVantagem) return;
 
     try {
-      const response = await fetch("/api/vantagens/resgatar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ vantagemId: selectedVantagem.id }),
-      });
+      const response = await fetch(
+        "http://localhost:8080/api/vantagens/resgatar",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${getToken()}`,
+          },
+          body: JSON.stringify({ vantagemId: selectedVantagem.id }),
+        },
+      );
 
       const data = await response.json();
 

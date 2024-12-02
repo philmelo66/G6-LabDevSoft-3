@@ -8,7 +8,7 @@ import java.util.Date;
 @Setter
 public class ExtratoDTO {
     private Long id;
-    private String tipo; // "TRANSFERENCIA" ou "RESGATE"
+    private String tipo;
     private int moedas;
     private Date data;
     private String descricao;
@@ -16,5 +16,5 @@ public class ExtratoDTO {
     private Long origemId;
     private String destino;
     private Long destinoId;
-    private String vantagemNome; // apenas para resgates
+    private String vantagemNome;
 } 

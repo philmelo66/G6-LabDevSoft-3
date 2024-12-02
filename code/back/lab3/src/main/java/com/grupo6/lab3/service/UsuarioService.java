@@ -26,14 +26,12 @@ public class UsuarioService {
     private EmpresaRepository empresaRepository;
 
     public Optional<Usuario> findById(Long id) {
-        // First get the base Usuario
         Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
         if (usuarioOpt.isEmpty()) {
             return Optional.empty();
         }
 
         Usuario usuario = usuarioOpt.get();
-        // Check the role and verify the specific type exists
         switch (usuario.getRole()) {
             case ROLE_PROFESSOR:
                 if (professorRepository.existsById(id)) {

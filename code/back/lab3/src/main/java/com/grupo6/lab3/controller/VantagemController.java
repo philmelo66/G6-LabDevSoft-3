@@ -17,7 +17,7 @@ public class VantagemController {
 
     @GetMapping
     public List<VantagemDTO> getAllVantagens() {
-        return vantagemService.getAllVantagens();
+        return vantagemService.getAllActiveVantagens();
     }
 
     @GetMapping("/{id}")
@@ -30,5 +30,24 @@ public class VantagemController {
     @PostMapping
     public VantagemDTO createVantagem(@RequestBody VantagemDTO vantagemDTO) {
         return vantagemService.createVantagem(vantagemDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteVantagem(@PathVariable Long id) {
+        boolean deleted = vantagemService.softDeleteVantagem(id);
+        return deleted ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<VantagemDTO> updateVantagem(
+            @PathVariable Long id,
+            @RequestBody VantagemDTO vantagemDTO) {
+        try {
+            return vantagemService.updateVantagem(id, vantagemDTO)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 } 

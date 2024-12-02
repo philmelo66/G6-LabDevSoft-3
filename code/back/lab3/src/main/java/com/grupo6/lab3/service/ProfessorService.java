@@ -65,7 +65,6 @@ public class ProfessorService {
         Professor professor = convertToEntity(professorDTO);
         professor.setId(id);
         
-        // Get existing usuario to maintain senha if not provided
         Professor existingProfessor = professorRepository.findById(id).get();
         professor.setUsuario(existingProfessor.getUsuario());
         

@@ -61,17 +61,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String role = userDetails.getAuthorities().iterator().next().getAuthority();
         String token = jwtUtil.generateToken(userDetails.getUsername(), role);
         
-        // Set response headers
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         
-        // Create response object
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("token", token);
         responseBody.put("userId", userDetails.getUsuario().getId());
         responseBody.put("role", role);
 
-        // Write response
         String jsonResponse = new ObjectMapper().writeValueAsString(responseBody);
         response.getWriter().write(jsonResponse);
         response.getWriter().flush();

@@ -23,7 +23,7 @@ import {
 import { useDisclosure } from "@nextui-org/use-disclosure";
 
 import { VantagemDTO } from "@/types";
-import { getToken } from "@/app/providers/auth-provider";
+import { getToken, useAuth } from "@/app/providers/auth-provider";
 
 export default function GerenciarVantagensPage() {
   const [vantagens, setVantagens] = useState<VantagemDTO[]>([]);
@@ -36,6 +36,7 @@ export default function GerenciarVantagensPage() {
     custoMoedas: 0,
   });
   const [editingId, setEditingId] = useState<number | null>(null);
+  const { usuario } = useAuth();
 
   useEffect(() => {
     fetchVantagens();
@@ -72,14 +73,13 @@ export default function GerenciarVantagensPage() {
         : "http://localhost:8080/api/vantagens";
 
       const method = editingId ? "PUT" : "POST";
-
       const response = await fetch(url, {
         method,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${getToken()}`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, empresaId: usuario?.id }),
       });
 
       const data = await response.json();

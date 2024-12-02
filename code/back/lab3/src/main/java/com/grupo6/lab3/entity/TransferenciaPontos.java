@@ -8,5 +8,4 @@ import lombok.Setter;
 @Getter
 @Setter
 public class TransferenciaPontos extends Transacao {
-    // Additional fields or methods specific to TransferenciaPontos can be added here
 }

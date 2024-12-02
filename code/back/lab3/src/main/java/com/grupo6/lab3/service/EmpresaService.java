@@ -47,7 +47,6 @@ public class EmpresaService {
         empresa.setUsuario(usuario);
         empresa.setId(usuario.getId());
 
-        empresa.setVantagens(new ArrayList<>());
         Empresa savedEmpresa = empresaRepository.save(empresa);
         return convertToDTO(savedEmpresa);
     }
@@ -60,7 +59,6 @@ public class EmpresaService {
         Empresa empresa = convertToEntity(empresaDTO);
         empresa.setId(id);
         
-        // Get existing usuario to maintain senha if not provided
         Empresa existingEmpresa = empresaRepository.findById(id).get();
         empresa.setUsuario(existingEmpresa.getUsuario());
         

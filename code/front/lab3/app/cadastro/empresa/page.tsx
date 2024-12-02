@@ -13,7 +13,7 @@ import { getToken } from "@/app/providers/auth-provider";
 export default function CadastroEmpresaPage() {
   const [formData, setFormData] = useState<CadastroEmpresaDTO>({
     nome: "",
-    email: "",
+    login: "",
     senha: "",
     descricao: "",
   });

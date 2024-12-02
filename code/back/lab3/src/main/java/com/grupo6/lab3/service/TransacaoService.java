@@ -101,7 +101,7 @@ public class TransacaoService {
             return empresa.get().getNome();
         }
 
-        return usuario.getLogin(); // fallback to login if specific type not found
+        return usuario.getLogin();
     }
 
     public List<ExtratoDTO> getExtratoByUsuarioId(Long usuarioId) {
@@ -112,7 +112,6 @@ public class TransacaoService {
         
         List<ExtratoDTO> extrato = new ArrayList<>();
         
-        // Converter transferências
         for (TransferenciaPontos t : transferencias) {
             ExtratoDTO dto = new ExtratoDTO();
             dto.setId(t.getId());
@@ -128,7 +127,6 @@ public class TransacaoService {
             extrato.add(dto);
         }
         
-        // Converter resgates
         for (ResgateVantagem r : resgates) {
             ExtratoDTO dto = new ExtratoDTO();
             dto.setId(r.getId());
@@ -142,7 +140,6 @@ public class TransacaoService {
             extrato.add(dto);
         }
         
-        // Ordenar por data, mais recente primeiro
         extrato.sort((a, b) -> b.getData().compareTo(a.getData()));
         
         return extrato;
