@@ -21,7 +21,7 @@ export function NavbarLinks() {
     if (usuario && route.roles.length > 0) {
       return route.roles.includes(usuario.role);
     }
-    console.log(route);
+
     return false;
   });
 

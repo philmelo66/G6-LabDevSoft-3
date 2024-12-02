@@ -49,7 +49,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       setUsuario(userData);
       localStorage.setItem("@Merit:user", JSON.stringify(userData));
-      Cookies.set("@Merit:role", userData.tipo);
+      Cookies.set("@Merit:role", userData.role);
     } catch (error) {
       console.error("Erro ao buscar usuário:", error);
       logout();
@@ -70,6 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       localStorage.setItem("@Merit:token", response.token);
       Cookies.set("@Merit:token", response.token, COOKIE_OPTIONS);
+      console.log(response.role);
       Cookies.set("@Merit:role", response.role, COOKIE_OPTIONS);
       localStorage.setItem("@Merit:user", JSON.stringify(response.userId));
 
