@@ -15,8 +15,10 @@ import { useDisclosure } from "@nextui-org/use-disclosure";
 
 import { VantagemDTO } from "@/types";
 import { getToken } from "@/app/providers/auth-provider";
+import { useAuth } from "@/app/providers/auth-provider";
 
 export default function VantagensAlunoPage() {
+  const { usuario } = useAuth();
   const [vantagens, setVantagens] = useState<VantagemDTO[]>([]);
   const [selectedVantagem, setSelectedVantagem] = useState<VantagemDTO | null>(
     null,
@@ -50,19 +52,64 @@ export default function VantagensAlunoPage() {
     fetchVantagens();
   }, []);
 
+  useEffect(() => {
+    const fetchSaldo = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/transacoes/extrato/${usuario?.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${getToken()}`,
+            },
+          }
+        );
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message);
+        }
+
+        const total = data.reduce((acc: number, transaction: TransferenciaPontosDTO) => {
+          if (transaction.destinoId === usuario?.id) {
+            return acc + transaction.moedas;
+          } else {
+            return acc - transaction.moedas;
+          }
+        }, 0);
+
+        setSaldoMoedas(total);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    if (usuario?.id) {
+      fetchSaldo();
+    }
+  }, [usuario?.id]);
+
   const handleResgate = async () => {
-    if (!selectedVantagem) return;
+    if (!selectedVantagem || !usuario?.id) return;
 
     try {
+      const resgateDTO = {
+        moedas: selectedVantagem.custoMoedas,
+        data: new Date(),
+        origemId: usuario.id,
+        destinoId: selectedVantagem.empresaId,
+        descricao: `Resgate da vantagem: ${selectedVantagem.nome}`,
+        vantagemId: selectedVantagem.id
+      };
+
       const response = await fetch(
-        "http://localhost:8080/api/vantagens/resgatar",
+        "http://localhost:8080/api/transacoes/resgates",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${getToken()}`,
           },
-          body: JSON.stringify({ vantagemId: selectedVantagem.id }),
+          body: JSON.stringify(resgateDTO),
         },
       );
 
@@ -72,12 +119,12 @@ export default function VantagensAlunoPage() {
         throw new Error(data.message);
       }
 
-      setSaldoMoedas(data.novoSaldo);
+      setSaldoMoedas(prev => prev - selectedVantagem.custoMoedas);
       onClose();
-      // Adicionar feedback de sucesso
+      // You might want to add a success notification here
     } catch (error) {
       console.error(error);
-      // Adicionar tratamento de erro
+      // You might want to add an error notification here
     }
   };
 

@@ -59,7 +59,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/alunos").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/empresas").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/vantagens").hasRole("ALUNO")
+                        .requestMatchers(HttpMethod.GET, "/api/vantagens").hasAnyRole("ALUNO", "EMPRESA")
                         .requestMatchers("/api/vantagens/**").hasRole("EMPRESA")
                         .requestMatchers("/api/transacoes/extrato/**").hasAnyRole("ALUNO", "PROFESSOR")
                         .requestMatchers("/api/transacoes/transferencias/**").hasAnyRole("PROFESSOR")
